@@ -1,0 +1,225 @@
+;*******************************************************************************;
+;                                                                               ;
+;                                                          :::      ::::::::    ;
+;    dotemacs                                            :+:      :+:    :+:    ;
+;                                                      +:+ +:+         +:+      ;
+;    by: thor <thor@42.fr>                           +#+  +:+       +#+         ;
+;                                                  +#+#+#+#+#+   +#+            ;
+;    Created: 2013/06/18 14:01:14 by thor               #+#    #+#              ;
+;    Updated: 2016/06/12 16:51:17 by vgrenier         ###   ########.fr        ;
+;                                                                               ;
+;*******************************************************************************;
+
+;; config 42
+(unless (getenv "NAME")
+    (setenv "NAME" "mmichel"))
+(unless (getenv "MAIL")
+    (setenv "MAIL" "mmichel@student.42.fr")) 
+;; defaut 42
+; Load general features files
+(setq config_files "/usr/share/emacs/site-lisp/")
+(setq load-path (append (list nil config_files) load-path))
+
+;(load "list.el")
+;(load "string.el")
+;(load "comments.el")
+(load "header.el")
+
+; Set default emacs configuration
+(set-language-environment "UTF-8")
+(setq-default font-lock-global-modes t)
+(setq-default line-number-mode t)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode t)
+(global-set-key (kbd "DEL") 'backward-delete-char)
+(setq-default c-backspace-function 'backward-delete-char)
+(setq-default c-basic-offset 4)
+(setq-default c-default-style "bsd")
+(setq-default tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60
+                             64 68 72 76 80 84 88 92 96 100 104 108 112 116 120))
+
+; Load user configuration
+(if (file-exists-p "~/.myemacs") (load-file "~/.myemacs"))
+
+;*******************************************************************************;
+;; fin config 42
+
+;; ;(require 'redo)
+;; ;require 'mac-key-mode)
+;; ;(mac-key-mode 1)
+
+;; (setq mac-command-modifier 'alt mac-option-modifier 'meta)
+;; ;    (require 'redo)
+;; ;    (require 'mac-key-mode)
+;; ;    (mac-key-mode 1)
+
+(require 'package) ;; You might already have this line
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(package-initialize) ;; You might already have this line
+
+(require 'package)
+;;(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+
+(require 'auto-complete-config)
+(ac-config-default)
+;; org-mode
+;;(require 'org)
+;; (require 'org-install)
+;; (define-key global-map "\C-cl" 'org-store-link)
+;; (define-key global-map "\C-ca" 'org-agenda)
+;; (setq org-log-done t)
+
+;
+;(global-visual-line-mode nil)
+; 
+;(global-linum-mode nil)
+
+(global-font-lock-mode t)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(gud-gdb-command-name "gdb --annotate=1")
+ '(large-file-warning-threshold nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+'(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default")))))
+
+;; affiche le numero de colonne
+;; et de ligne
+(column-number-mode 1)
+(line-number-mode 1)
+;; retour a la ligne 't', sans retour a la ligne 'nil'
+(setq truncate-partial-width-windows t)
+;; affichage de l heure
+(display-time-mode t)
+(setq display-time-24hr-format t)  ;; Format 24 heures
+
+;; affectation de touhe de raccourcie
+;; remplacer
+(global-set-key (kbd "C-c h") 'replace-string)
+;; remplacer avec regexp
+;;(global-set-key (kbd "C-c r h ") 'replace-regexp)
+
+;; copier un fichier en le renomant
+;;(global-set-key (kbd "C-c C-c r") 'copy-file)
+;; dupliquer fichier
+(global-set-key (kbd "C-c d") 'set-visited-file-name)
+
+;;
+(global-set-key (kbd "C-c C-c") 'comment-region)
+(global-set-key (kbd "C-c c") 'comment-region)
+(global-set-key (kbd "C-c u") 'uncomment-region)
+
+;; ;; de pararaphe en paragraphe
+;; par defaut M-} et M-{
+;;(global-set-key (kbd "C-c <up>") 'backward-paragraph)
+;;(global-set-key (kbd "C-c <down>") 'forward-paragraph)
+;; (global-set-key [C-up] 'flo-scroll-one-line-down)
+;; (global-set-key [C-down] 'flo-scroll-one-line-up)
+
+(global-set-key (kbd "C-c n") 'switch-to-buffer-other-window)
+
+(defun backward-kill-line ()
+  "Kill backward from point to beginning of line"
+  (interactive) (kill-line 0))
+
+;; raccourci comme C-u sur gnome-terminal
+(global-set-key [M-backspace] 'backward-kill-line)
+(global-set-key [C-x C-backspace] 'backward-kill-line)
+
+;; Sauvegarde des historiques et des coordonnées des dernières modifs entre
+;; deux sessions d'Emacs :
+(custom-set-variables '(session-initialize t))
+;; (when (require-faible 'session)
+;;   ;; Sauvegarde la session essentiellement... à tout bout de champ :
+;;   (add-hook 'pointemacs-taches-periodiques-hook 'session-save-session))
+
+;; Signets d'Emacs (eux aussi sauvegardés entre deux sessions) :
+;; taper C-x r m pour poser un signet.
+(custom-set-variables '(bookmark-save-flag 1))
+
+;; C'est fastidieux de taper « yes » pour confirmer, raccourcissons
+;; cela à « y » (idem pour « no », désormais « n »).
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Lorsque le curseur atteint la fin de la fenêtre, le contenu se
+;; déplace d'une seule ligne et non d'une demi-fenêtre.
+(setq scroll-step 2)
+
+;; Montrer la correspondance des parenthèses (systématiquement et non seulement après la frappe)
+(require 'paren)
+(show-paren-mode t)
+(setq blink-matching-paren t)
+(setq blink-matching-paren-on-screen t)
+(setq show-paren-style 'expression)
+(setq blink-matching-paren-dont-ignore-comments t)
+;; modifier couleur pour la correspondance des parentheses
+(set-face-background 'show-paren-match "darkblue")
+
+;; Lorsqu'on saisit un texte alors qu'une zone est sélectionnée, cette dernière est écrasée par le texte saisi.
+(delete-selection-mode 1)
+
+;; emplacement auto-save
+(setq
+ backup-directory-alist
+     '((".*" . "~/.emacs.d/sauvegardes")) )
+
+;; lang
+;;(set-language-environment "Latin-1")
+;; Suppression de la barre d'outils
+(tool-bar-mode 0)
+;; Pour avoir l'affichage du numero de colonne :
+;;(column-number-mode nil)
+;; Dictionnaire pour ispell
+(setq ispell-dictionary "francais")
+;;espace fin de ligne
+(setq next-line-add-newlines nil)
+
+(setq mac-option-key-is-meta nil)
+(setq mac-command-key-is-meta t)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+
+(set-keyboard-coding-system nil)
+
+;; deplacement dans les fenetres
+;; (global-set-key [C-left] 'windmove-left)
+;; (global-set-key [C-right] 'windmove-right)
+;; (global-set-key [C-up] 'windmove-up)
+;; (global-set-key [C-down] 'windmove-down)
+(global-set-key (kbd "C-c <left>") 'windmove-left)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+(global-set-key (kbd "C-c <up>") 'windmove-up)
+(global-set-key (kbd "C-c <down>") 'windmove-down)
+;; (global-set-key (kbd "C-<left>") 'windmove-left)
+;; (global-set-key (kbd "C-<right>") 'windmove-right)
+;; (global-set-key (kbd "C-<up>") 'windmove-up)
+;; (global-set-key (kbd "C-<down>") 'windmove-down)
+
+;; auto complete en fonction de la case
+(setq completion-ignore-case t)
+
+;; N'insère jamais de tabulations, mais des espaces qui produisent le
+;; même espacement. Voir aussi les fonctions M-x tabify et
+;; M-x untabify trouvées par : Help -> Manuals -> Browse Manuals with
+;; Info puis entrées "Emacs", "Indentation" et enfin "Just spaces".
+;;(setq-default indent-tabs-mode nil)
+
+(add-to-list 'auto-mode-alist '("\\.ods\\'" . doc-view-mode))
+
+(global-set-key (kbd "C-c l") 'count-words-region)
+
+(setq bookmark-save-flag 1)
+
+(defun header-update ()
+  "Updates the header disable."
+  (interactive))
